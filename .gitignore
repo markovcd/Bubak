@@ -259,3 +259,18 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/Bubak.Client.Tests/boost_thread-vc120-mt-1_55.dll
+/Bubak.Client.Tests/boost_system-vc120-mt-1_55.dll
+/Bubak.Client.Tests/boost_date_time-vc120-mt-1_55.dll
+/Bubak.Client.Tests/boost_chrono-vc120-mt-1_55.dll
+/Bubak.Client.Tests/torrent.dll
+/Bubak.Spike/boost_thread-vc120-mt-1_55.dll
+/Bubak.Spike/boost_system-vc120-mt-1_55.dll
+/Bubak.Spike/boost_date_time-vc120-mt-1_55.dll
+/Bubak.Spike/boost_chrono-vc120-mt-1_55.dll
+/Bubak.Spike/torrent.dll
+/Bubak.Torrent/boost_thread-vc120-mt-1_55.dll
+/Bubak.Torrent/boost_system-vc120-mt-1_55.dll
+/Bubak.Torrent/boost_date_time-vc120-mt-1_55.dll
+/Bubak.Torrent/boost_chrono-vc120-mt-1_55.dll
+/Bubak.Torrent/torrent.dll

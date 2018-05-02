@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2027
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Bubak.Shared", "Bubak.Model\Bubak.Shared.shproj", "{C2CD0CD9-1E59-4F72-922D-979B84275C88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.View", "Bubak.View\Bubak.View.csproj", "{20AE37BD-47B5-4197-9EF2-8C94E89BDEF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.Client", "Bubak.Torrent\Bubak.Client.csproj", "{68338566-E5B6-4B82-A6E8-9BB4010892BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.ViewModel", "Bubak.ViewModel\Bubak.ViewModel.csproj", "{73BA6F7F-CDA6-4F7A-B789-FC7CD027318A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.ViewModel.Tests", "Bubak.ViewModel.Tests\Bubak.ViewModel.Tests.csproj", "{5EAF25AE-D8AD-48E9-AFB8-712357ECDB0F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.Spike", "Bubak.Spike\Bubak.Spike.csproj", "{5A47CFD8-82A6-43A6-BE2A-686739D00E98}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Bubak.Model\Bubak.Model.projitems*{5a47cfd8-82a6-43a6-be2a-686739d00e98}*SharedItemsImports = 4
+		Bubak.Model\Bubak.Model.projitems*{68338566-e5b6-4b82-a6e8-9bb4010892be}*SharedItemsImports = 4
+		Bubak.Model\Bubak.Model.projitems*{73ba6f7f-cda6-4f7a-b789-fc7cd027318a}*SharedItemsImports = 4
+		Bubak.Model\Bubak.Model.projitems*{c2cd0cd9-1e59-4f72-922d-979b84275c88}*SharedItemsImports = 13
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20AE37BD-47B5-4197-9EF2-8C94E89BDEF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20AE37BD-47B5-4197-9EF2-8C94E89BDEF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20AE37BD-47B5-4197-9EF2-8C94E89BDEF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20AE37BD-47B5-4197-9EF2-8C94E89BDEF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68338566-E5B6-4B82-A6E8-9BB4010892BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68338566-E5B6-4B82-A6E8-9BB4010892BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68338566-E5B6-4B82-A6E8-9BB4010892BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68338566-E5B6-4B82-A6E8-9BB4010892BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73BA6F7F-CDA6-4F7A-B789-FC7CD027318A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73BA6F7F-CDA6-4F7A-B789-FC7CD027318A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73BA6F7F-CDA6-4F7A-B789-FC7CD027318A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73BA6F7F-CDA6-4F7A-B789-FC7CD027318A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EAF25AE-D8AD-48E9-AFB8-712357ECDB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EAF25AE-D8AD-48E9-AFB8-712357ECDB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EAF25AE-D8AD-48E9-AFB8-712357ECDB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EAF25AE-D8AD-48E9-AFB8-712357ECDB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5DCBBFE4-9C6C-4FED-9141-511AB6A27242}
+	EndGlobalSection
+EndGlobal
