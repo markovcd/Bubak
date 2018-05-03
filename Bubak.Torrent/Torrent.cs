@@ -22,6 +22,8 @@ namespace Bubak.Client
         internal TorrentHandle _handle;
         private TimeSpan _timeout;
 
+        public event Action<Torrent> Updated;
+
         public string Name { get; }
         public string Comment { get; }
         public DateTime? CreationDate { get; }
@@ -74,6 +76,8 @@ namespace Bubak.Client
             UpdateStatus(_handle.QueryStatus());
             UpdateFileProperties(_handle.GetFilePriorities(), (f, p) => f.Priority = p);
             UpdateFileProperties(_handle.GetFileProgresses(), (f, p) => f.DownloadedBytes = p);
+
+            Updated?.Invoke(this);
         }
 
         private void UpdateStatus(TorrentStatus status)

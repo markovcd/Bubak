@@ -169,8 +169,9 @@ namespace Bubak.Client
             _logger.Log(saveResumeData.Message);
 
             var torrent = EnsureTorrentExist(saveResumeData.Handle);
-            torrent.Update();
             torrent.ResumeData = saveResumeData.ResumeData;
+            torrent.Update();
+            
 
             TorrentResumeDataSaved?.Invoke(this, torrent, saveResumeData.ResumeData);
         }
@@ -200,8 +201,9 @@ namespace Bubak.Client
             _logger.Log(fileCompleted.Message);
 
             var torrent = EnsureTorrentExist(fileCompleted.Handle);
-            torrent.Update();
             torrent.Files[fileCompleted.Index].IsFinished = true;
+            torrent.Update();
+            
 
             TorrentFileCompleted?.Invoke(this, torrent, torrent.Files[fileCompleted.Index]);
         }

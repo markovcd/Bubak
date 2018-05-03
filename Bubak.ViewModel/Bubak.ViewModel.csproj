@@ -52,11 +52,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="BindableBase.cs" />
+    <Compile Include="TorrentsViewModel.cs" />
+    <Compile Include="TorrentViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bubak.Torrent\Bubak.Client.csproj">
+      <Project>{68338566-e5b6-4b82-a6e8-9bb4010892be}</Project>
+      <Name>Bubak.Client</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Bubak.Model\Bubak.Model.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
