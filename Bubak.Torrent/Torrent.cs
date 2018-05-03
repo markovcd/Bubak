@@ -1,7 +1,6 @@
 ﻿using Ragnar;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Bubak.Client
@@ -45,22 +44,19 @@ namespace Bubak.Client
         public bool CanSeed { get; private set; }
         public bool IsSequentialDownload { get; private set; }
         public TorrentState State { get; private set; }
+        public byte[] ResumeData { get; internal set; }
+
+        public string InfoHash { get; }
 
         public Torrent(TorrentHandle handle)
         {
             _handle = handle;
+           
             _timeout = TimeSpan.FromSeconds(1);
 
-            TorrentInfo info = null;
-
-            var stopwatch = Stopwatch.StartNew();
-            while (info == null && stopwatch.Elapsed <= _timeout)
-            {
-                info = _handle.TorrentFile;
-            }
-
-            stopwatch.Stop();
-
+            var info = _handle.TorrentFile;
+         
+            InfoHash = info.InfoHash;
             Name = info.Name;
             Comment = info.Comment;
             CreationDate = info.CreationDate;
@@ -78,16 +74,6 @@ namespace Bubak.Client
             UpdateStatus(_handle.QueryStatus());
             UpdateFileProperties(_handle.GetFilePriorities(), (f, p) => f.Priority = p);
             UpdateFileProperties(_handle.GetFileProgresses(), (f, p) => f.DownloadedBytes = p);
-        }
-
-        public void Pause()
-        {
-            _handle.Pause();
-        }
-
-        public void Resume()
-        {
-            _handle.Resume();
         }
 
         private void UpdateStatus(TorrentStatus status)
@@ -121,6 +107,11 @@ namespace Bubak.Client
         {
             _handle?.Dispose();
             _handle = null;
+        }
+
+        public override int GetHashCode()
+        {
+            return InfoHash.GetHashCode();
         }
     }
 }

@@ -4,15 +4,12 @@ namespace Bubak.Client
 {
     public partial class TorrentClient
     {
-        public delegate void UrlHandler(TorrentClient sender, string url);
-        public delegate void ResumeDataHandler(TorrentClient sender, byte[] resumeData, string message);
-        public delegate void MessageHandler(TorrentClient sender, string message);
-        public delegate void TorrentHandler(TorrentClient sender, Torrent torent, string message);
-        public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file, string message);
-        public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName, string message);
-        public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState, string message);
+        public delegate void TorrentResumeDataHandler(TorrentClient sender, Torrent torent, byte[] resumeData);
+        public delegate void TorrentHandler(TorrentClient sender, Torrent torent);
+        public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file);
+        public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName);
+        public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
 
-        public event UrlHandler TorrentAddFailed;
         public event TorrentHandler TorrentAdded;
         public event TorrentHandler TorrentChecked;
         public event TorrentHandler TorrentResumed;
@@ -20,37 +17,36 @@ namespace Bubak.Client
         public event TorrentHandler TorrentPaused;
         public event TorrentHandler TorrentFinished;
         public event TorrentHandler TorrentMetadataReceived;
+        public event TorrentHandler TorrentStatsReceived;
         public event TorrentFileHandler TorrentFileCompleted;
         public event TorrentFileNameHandler TorrentFileRenamed;
         public event TorrentStateChangeHandler TorrentStateChanged;
-        public event ResumeDataHandler ResumeDataSaved;
-
-        public event MessageHandler UnknownAlert;
+        public event TorrentResumeDataHandler TorrentResumeDataSaved;
 
         protected void RaiseEvent(Alert alert)
         {
             switch (alert)
             {
                 case FileCompletedAlert fileCompleted:
-                    OnFileCompleted(fileCompleted);
+                    OnTorrentFileCompleted(fileCompleted);
                     break;
                 case FileRenamedAlert fileRenamed:
-                    OnFileRenamed(fileRenamed);
+                    OnTorrentFileRenamed(fileRenamed);
                     break;
                 case MetadataReceivedAlert metadataReceived:
-                    OnMetadataReceived(metadataReceived);
+                    OnTorrentMetadataReceived(metadataReceived);
                     break;
                 case SaveResumeDataAlert saveResumeData:
-                    OnSaveResumeData(saveResumeData);
+                    OnTorrentSaveResumeData(saveResumeData);
                     break;
                 case StateChangedAlert stateChanged:
-                    OnStateChanged(stateChanged);
+                    OnTorrentStateChanged(stateChanged);
                     break;
                 case StateUpdateAlert stateUpdate:
                     OnStateUpdate(stateUpdate);
                     break;
                 case StatsAlert stats:
-                    OnStats(stats);
+                    OnTorrentStatsReceived(stats);
                     break;
                 case TorrentAddedAlert torrentAdded:
                     OnTorrentAdded(torrentAdded);
@@ -76,95 +72,138 @@ namespace Bubak.Client
             }
         }
 
-        protected virtual void OnTorrentAddFailed(string url)
-        {
-            _logger.Log($"Failed adding torrent: {url}");
-
-            TorrentAddFailed?.Invoke(this, url);
-        }
-
         protected virtual void OnUknownAlert(Alert alert)
         {
             _logger.Log(alert.Message);
-            UnknownAlert?.Invoke(this, alert.Message);
         }
 
         protected virtual void OnTorrentChecked(TorrentCheckedAlert torrentChecked)
         {
             _logger.Log(torrentChecked.Message);
-            TorrentChecked?.Invoke(this, GetTorrentByHandle(torrentChecked.Handle), torrentChecked.Message);
+
+            var torrent = EnsureTorrentExist(torrentChecked.Handle);
+            torrent.Update();
+
+            TorrentChecked?.Invoke(this, torrent);
         }
 
         protected virtual void OnTorrentResumed(TorrentResumedAlert torrentResumed)
         {
             _logger.Log(torrentResumed.Message);
-            TorrentResumed?.Invoke(this, GetTorrentByHandle(torrentResumed.Handle), torrentResumed.Message);
+
+            var torrent = EnsureTorrentExist(torrentResumed.Handle);
+            torrent.Update();
+
+            TorrentResumed?.Invoke(this, torrent);
         }
 
         protected virtual void OnTorrentRemoved(TorrentRemovedAlert torentRemoved)
         {
             _logger.Log(torentRemoved.Message);
-            TorrentRemoved?.Invoke(this, GetTorrentByHandle(torentRemoved.Handle), torentRemoved.Message);
+
+            TorrentRemoved?.Invoke(this, _torrentToRemove);
+
+            RemoveTorrentFromList(_torrentToRemove);
+            _torrentToRemove.Dispose();
+            _torrentToRemove = null;
         }
 
         protected virtual void OnTorrentPaused(TorrentPausedAlert torrentPaused)
         {
             _logger.Log(torrentPaused.Message);
-            TorrentPaused?.Invoke(this, GetTorrentByHandle(torrentPaused.Handle), torrentPaused.Message);
+
+            var torrent = EnsureTorrentExist(torrentPaused.Handle);
+            torrent.Update();
+
+            TorrentPaused?.Invoke(this, torrent);
         }
 
         protected virtual void OnTorrentFinished(TorrentFinishedAlert torrentFinished)
         {
             _logger.Log(torrentFinished.Message);
-            TorrentFinished?.Invoke(this, GetTorrentByHandle(torrentFinished.Handle), torrentFinished.Message);
+
+            var torrent = EnsureTorrentExist(torrentFinished.Handle);
+            torrent.Update();   
+
+            TorrentFinished?.Invoke(this, torrent);
         }
 
         protected virtual void OnTorrentAdded(TorrentAddedAlert torrentAdded)
         {
             _logger.Log(torrentAdded.Message);
-            TorrentAdded?.Invoke(this, GetTorrentByHandle(torrentAdded.Handle), torrentAdded.Message);
+
+            var torrent = EnsureTorrentExist(torrentAdded.Handle);
+            torrent.Update();
+
+            //TorrentAdded?.Invoke(this, torrent);
         }
 
-        protected virtual void OnStats(StatsAlert stats)
+        protected virtual void OnTorrentStatsReceived(StatsAlert stats)
         {
             _logger.Log(stats.Message);
+
+            var torrent = EnsureTorrentExist(stats.Handle);
+            torrent.Update();          
+
+            TorrentStatsReceived?.Invoke(this, torrent); // TODO: implement more details
         }
 
         protected virtual void OnStateUpdate(StateUpdateAlert stateUpdate)
         {
-            _logger.Log(stateUpdate.Message);
+            _logger.Log(stateUpdate.Message); // TODO: check if received for all torrents
         }
 
-        protected virtual void OnStateChanged(StateChangedAlert stateChanged)
+        protected virtual void OnTorrentStateChanged(StateChangedAlert stateChanged)
         {
             _logger.Log(stateChanged.Message);
-            TorrentStateChanged?.Invoke(this, GetTorrentByHandle(stateChanged.Handle), (TorrentState)stateChanged.State, (TorrentState)stateChanged.PreviousState, stateChanged.Message);
+
+            var torrent = EnsureTorrentExist(stateChanged.Handle);
+            
+            torrent.Update();           
+
+            TorrentStateChanged?.Invoke(this, torrent, (TorrentState)stateChanged.State, (TorrentState)stateChanged.PreviousState);
         }
 
-        protected virtual void OnSaveResumeData(SaveResumeDataAlert saveResumeData)
+        protected virtual void OnTorrentSaveResumeData(SaveResumeDataAlert saveResumeData)
         {
             _logger.Log(saveResumeData.Message);
-            ResumeDataSaved?.Invoke(this, saveResumeData.ResumeData, saveResumeData.Message);
+
+            var torrent = EnsureTorrentExist(saveResumeData.Handle);
+            torrent.Update();
+            torrent.ResumeData = saveResumeData.ResumeData;
+
+            TorrentResumeDataSaved?.Invoke(this, torrent, saveResumeData.ResumeData);
         }
 
-        protected virtual void OnMetadataReceived(MetadataReceivedAlert metadataReceived)
+        protected virtual void OnTorrentMetadataReceived(MetadataReceivedAlert metadataReceived)
         {
             _logger.Log(metadataReceived.Message);
-            TorrentMetadataReceived?.Invoke(this, GetTorrentByHandle(metadataReceived.Handle), metadataReceived.Message);
+           
+            var torrent = EnsureTorrentExist(metadataReceived.Handle);
+            torrent.Update();
+
+            TorrentMetadataReceived?.Invoke(this, torrent);
         }
 
-        protected virtual void OnFileRenamed(FileRenamedAlert fileRenamed)
+        protected virtual void OnTorrentFileRenamed(FileRenamedAlert fileRenamed)
         {
             _logger.Log(fileRenamed.Message);
-            var torrent = GetTorrentByHandle(fileRenamed.Handle);
-            TorrentFileRenamed?.Invoke(this, torrent, torrent.Files[fileRenamed.Index], fileRenamed.Name, fileRenamed.Message);
+
+            var torrent = EnsureTorrentExist(fileRenamed.Handle);
+            torrent.Update();
+
+            TorrentFileRenamed?.Invoke(this, torrent, torrent.Files[fileRenamed.Index], fileRenamed.Name);
         }
 
-        protected virtual void OnFileCompleted(FileCompletedAlert fileCompleted)
+        protected virtual void OnTorrentFileCompleted(FileCompletedAlert fileCompleted)
         {
             _logger.Log(fileCompleted.Message);
-            var torrent = GetTorrentByHandle(fileCompleted.Handle);
-            TorrentFileCompleted?.Invoke(this, torrent, torrent.Files[fileCompleted.Index], fileCompleted.Message);
+
+            var torrent = EnsureTorrentExist(fileCompleted.Handle);
+            torrent.Update();
+            torrent.Files[fileCompleted.Index].IsFinished = true;
+
+            TorrentFileCompleted?.Invoke(this, torrent, torrent.Files[fileCompleted.Index]);
         }
     }
 }

@@ -29,21 +29,6 @@ namespace Bubak.Client.Tests
         }
 
         [TestMethod]
-        public void AddTorrent_FailedEventFired_LibraryCallReturnedNull()
-        {
-            var torrentHandleMock = new Mock<TorrentHandle>(new object [] { null, null });       
-            _sessionMock.Setup(s => s.AddTorrent(It.IsNotNull<AddTorrentParams>())).Returns(() => null);
-
-            var fired = false;
-            _client.TorrentAddFailed += (t, u) => fired = true;
-            _client.Settings.SavePath = string.Empty;
-            _client.AddTorrent("test");
-
-            Assert.IsTrue(fired);
-                     
-        }
-
-        [TestMethod]
         public void Dispose_DisposesSessionOnce_WhenCalledTwice()
         {
             _client.Dispose();
