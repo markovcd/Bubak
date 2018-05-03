@@ -5,32 +5,35 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Caliburn.Micro;
+using Bubak.Shared.Misc;
 
 namespace Bubak.ViewModel
 {
     public class TorrentsViewModel
     {
+        private readonly ITorrentClient _client;
+        private readonly IEventAggregator _eventAggregator;
+        private readonly ILogger _logger;
+
         public ObservableCollection<TorrentViewModel> Torrents { get; }
 
-        public TorrentClient Client { get; }
+        
 
-        public TorrentsViewModel(TorrentClient client)
+        public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger)
         {
-            Client = client;
+            _logger = logger;
+            _client = client;
+            _eventAggregator = eventAggregator;
+
             Torrents = new ObservableCollection<TorrentViewModel>();
 
-            Client.TorrentAdded += (c, t) => ClientTorrentAdded(t);
-            Client.TorrentRemoved += (c, t) => ClientTorrentRemoved(t);
         }
 
-        private void ClientTorrentRemoved(Torrent t)
+        public void AddTorrent(string url)
         {
-            throw new NotImplementedException();
-        }
 
-        private void ClientTorrentAdded(Torrent t)
-        {
-            throw new NotImplementedException();
         }
+    
     }
 }

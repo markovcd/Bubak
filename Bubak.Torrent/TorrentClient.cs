@@ -7,7 +7,7 @@ using Ragnar;
 
 namespace Bubak.Client
 {
-    public partial class TorrentClient : IDisposable
+    public partial class TorrentClient : IDisposable, ITorrentClient
     {
         private ILogger _logger;
         private ISession _session;
@@ -63,19 +63,17 @@ namespace Bubak.Client
                         {
                             foreach (var alert in alerts)
                             {
-                                Console.WriteLine(Torrents.FirstOrDefault()?.Progress);
                                 RaiseEvent(alert);
                             }
                         }
                     }
-
                    
-                    await Task.Delay(10).ConfigureAwait(false);
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
             {
-                _logger.Log($"{ex.GetType()} - {ex.Message}{System.Environment.NewLine}{ex.StackTrace}");
+                _logger.LogException(ex);
             }
             finally
             {
@@ -93,7 +91,9 @@ namespace Bubak.Client
         {
             lock (_torrentsLock)
             {
-                return Torrents.FirstOrDefault(t => t.GetHashCode() == handle?.TorrentFile?.InfoHash?.GetHashCode());
+                var hashCode = handle?.TorrentFile?.InfoHash?.GetHashCode();
+                if (hashCode == null) return null;
+                return Torrents.FirstOrDefault(t => t.GetHashCode() == hashCode);
             }
         }
 
@@ -161,6 +161,14 @@ namespace Bubak.Client
         public void AddTorrent(string url)
         {
             _session.AsyncAddTorrent(CreateParams(url));
+        }
+
+        public Task<Torrent> AddTorrentAsync(string url)
+        {
+            var tcs = new TaskCompletionSource<Torrent>();
+            TorrentAdded += (c, t) => tcs.SetResult(t);
+            AddTorrent(url);
+            return tcs.Task;
         }
 
         public void RemoveTorrent(Torrent torrent, bool removeData = false)

@@ -14,5 +14,10 @@ namespace Bubak.Shared.Misc
 
             Debug.Print(s);
         }
+
+        public void LogException(Exception exception, [CallerMemberName] string callerName = null)
+        {
+            Log($"{exception.GetType()} - {exception.Message}{Environment.NewLine}{exception.StackTrace}");
+        }
     }
 }

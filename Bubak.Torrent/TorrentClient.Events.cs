@@ -2,14 +2,14 @@
 
 namespace Bubak.Client
 {
+    public delegate void TorrentResumeDataHandler(TorrentClient sender, Torrent torent, byte[] resumeData);
+    public delegate void TorrentHandler(TorrentClient sender, Torrent torent);
+    public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file);
+    public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName);
+    public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
+
     public partial class TorrentClient
     {
-        public delegate void TorrentResumeDataHandler(TorrentClient sender, Torrent torent, byte[] resumeData);
-        public delegate void TorrentHandler(TorrentClient sender, Torrent torent);
-        public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file);
-        public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName);
-        public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
-
         public event TorrentHandler TorrentAdded;
         public event TorrentHandler TorrentChecked;
         public event TorrentHandler TorrentResumed;
@@ -202,8 +202,7 @@ namespace Bubak.Client
 
             var torrent = EnsureTorrentExist(fileCompleted.Handle);
             torrent.Files[fileCompleted.Index].IsFinished = true;
-            torrent.Update();
-            
+            torrent.Update();           
 
             TorrentFileCompleted?.Invoke(this, torrent, torrent.Files[fileCompleted.Index]);
         }
