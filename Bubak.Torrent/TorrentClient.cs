@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using Bubak.Shared.Misc;
 using Ragnar;
 
-
 namespace Bubak.Client
 {
-    public class TorrentClient : IDisposable
+    public partial class TorrentClient : IDisposable
     {
         private ILogger _logger;
-        private Session _session;
+        private ISession _session;
         private TorrentClientSettings _settings;
-
+        private TimeSpan _timeout;
+        private volatile bool _isLoopRunning;
+               
         public IReadOnlyList<Torrent> Torrents { get; private set; }
 
         public TorrentClientSettings Settings
@@ -22,11 +23,20 @@ namespace Bubak.Client
             set => _settings = value;
         }
 
-        public TorrentClient(ILogger logger = null)
+        public TorrentClient(ILogger logger = null) 
+            : this(logger ?? new DebugLogger(), new Session())
         {
-            _session = new Session();
-            _logger = logger ?? new DebugLogger();
+        }
+
+        public TorrentClient(ILogger logger, ISession session)
+        {
+            _timeout = TimeSpan.FromMilliseconds(10000);
+            _logger = logger;
+            _session = session;
+            _session.SetAlertMask(SessionAlertCategory.All);
             Torrents = new List<Torrent>();
+
+            StartEventLoop();
         }
 
         public Torrent AddTorrent(string url)
@@ -36,20 +46,17 @@ namespace Bubak.Client
 
             if (handle == null)
             {
-                OnFailedAddTorrent(url);
+                OnTorrentAddFailed(url);
                 return null;
             }
 
             var torrent = new Torrent(handle);
-
-            if (Torrents == null) Torrents = new List<Torrent>();
 
             Torrents = Torrents
                 .Concat(new[] { torrent })
                 .ToList()
                 .AsReadOnly();
 
-            OnAddTorrent(torrent);
             return torrent;
         }
 
@@ -67,6 +74,47 @@ namespace Bubak.Client
             foreach (var torrent in Torrents) torrent.Update();
         }
 
+        protected void StartEventLoop()
+        {
+            if (_isLoopRunning) throw new InvalidOperationException("Can't start more than one message loop.");
+            _isLoopRunning = true;
+
+            Task.Run(EventLoop);
+        }
+
+        private async Task EventLoop()
+        {
+            while (_isLoopRunning)
+            {
+                WaitForEvent();
+                await Task.Delay(10).ConfigureAwait(false);
+            }
+        }
+
+        protected void StopEventLoop()
+        {
+            _isLoopRunning = false;
+        }
+
+        protected bool WaitForEvent()
+        {
+            var result = _session.Alerts.PeekWait(_timeout);
+            if (!result) return false;
+
+            var alert = _session.Alerts.Pop();
+
+            if (alert == null) return false;
+
+            RaiseEvent(alert);
+
+            return true;
+        }
+
+        protected Torrent GetTorrentByHandle(TorrentHandle handle)
+        {
+            return Torrents.FirstOrDefault(t => ReferenceEquals(handle, t._handle));
+        }
+   
         public void RemoveTorrent(Torrent torrent, bool removeData = false)
         {
             Torrents = Torrents
@@ -88,20 +136,11 @@ namespace Bubak.Client
             _session.Resume();
         }
 
-        protected virtual void OnFailedAddTorrent(string url)
-        {
-            _logger.Log($"Failed adding torrent: {url}");
-        }
-
-        protected virtual void OnAddTorrent(Torrent torrent)
-        {
-            _logger.Log($"Added torrent: {torrent.Name}");
-        }
-
         public void Dispose()
         {
+            StopEventLoop();
             foreach (var torrent in Torrents) torrent.Dispose();
-            _session?.Dispose();
+            (_session as IDisposable)?.Dispose();
             _session = null;
             _logger = null;
         }

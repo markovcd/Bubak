@@ -20,14 +20,7 @@ namespace Bubak.Spike
                 var torrent = client.AddTorrent(url);
                 while (true)
                 {
-             
-                    Thread.Sleep(1000);
-                    client.Update();
-
-                    Console.WriteLine(torrent.Name);
-                    Console.WriteLine((float)torrent.DownloadedBytes / (float)torrent.TotalBytes);
-                    Console.WriteLine($"{torrent.Progress}");
-                    Console.WriteLine();
+                    
                    
                 }
             }

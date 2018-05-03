@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using Bubak.Shared.Misc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Ragnar;
@@ -21,19 +22,25 @@ namespace Bubak.Client.Tests
         public void Setup()
         {
             _sessionMock = new Mock<ISession>();
+            
             _sessionDisposableMock = _sessionMock.As<IDisposable>();
             _loggerMock = new Mock<ILogger>();
-            _client = new TorrentClient(() => _sessionMock.Object, d => d.Dispose(), _loggerMock.Object);
+            _client = new TorrentClient(_loggerMock.Object, _sessionMock.Object);
         }
 
         [TestMethod]
-        public void AddTorrent_()
+        public void AddTorrent_FailedEventFired_LibraryCallReturnedNull()
         {
+            var torrentHandleMock = new Mock<TorrentHandle>(new object [] { null, null });       
+            _sessionMock.Setup(s => s.AddTorrent(It.IsNotNull<AddTorrentParams>())).Returns(() => null);
+
+            var fired = false;
+            _client.TorrentAddFailed += (t, u) => fired = true;
+            _client.Settings.SavePath = string.Empty;
             _client.AddTorrent("test");
 
-            var ctor = typeof(TorrentHandle).GetConstructors(BindingFlags.Instance | BindingFlags.NonPublic).First();
-            var handle = (TorrentHandle)ctor.Invoke(null);
-            
+            Assert.IsTrue(fired);
+                     
         }
 
         [TestMethod]

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.ViewModel.Tests", "Bu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.Spike", "Bubak.Spike\Bubak.Spike.csproj", "{5A47CFD8-82A6-43A6-BE2A-686739D00E98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bubak.Client.Tests", "Bubak.Client.Tests\Bubak.Client.Tests.csproj", "{00C43A0E-2F08-4332-87D9-6783E21A3385}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Bubak.Model\Bubak.Model.projitems*{5a47cfd8-82a6-43a6-be2a-686739d00e98}*SharedItemsImports = 4
@@ -47,6 +49,10 @@ Global
 		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A47CFD8-82A6-43A6-BE2A-686739D00E98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00C43A0E-2F08-4332-87D9-6783E21A3385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00C43A0E-2F08-4332-87D9-6783E21A3385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00C43A0E-2F08-4332-87D9-6783E21A3385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00C43A0E-2F08-4332-87D9-6783E21A3385}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

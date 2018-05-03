@@ -51,9 +51,9 @@ namespace Bubak.Client
             _handle = handle;
             _timeout = TimeSpan.FromSeconds(1);
 
-            var stopwatch = Stopwatch.StartNew();
             TorrentInfo info = null;
 
+            var stopwatch = Stopwatch.StartNew();
             while (info == null && stopwatch.Elapsed <= _timeout)
             {
                 info = _handle.TorrentFile;
