@@ -1,12 +1,13 @@
 ﻿using Ragnar;
+using System;
 
 namespace Bubak.Client
 {
-    public delegate void TorrentResumeDataHandler(TorrentClient sender, Torrent torent, byte[] resumeData);
-    public delegate void TorrentHandler(TorrentClient sender, Torrent torent);
-    public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file);
-    public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName);
-    public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
+    public delegate void TorrentResumeDataHandler(TorrentClient sender, ITorrent torent, byte[] resumeData);
+    public delegate void TorrentHandler(TorrentClient sender, ITorrent torent);
+    public delegate void TorrentFileHandler(TorrentClient sender, ITorrent torent, IFile file);
+    public delegate void TorrentFileNameHandler(TorrentClient sender, ITorrent torent, IFile file, string fileName);
+    public delegate void TorrentStateChangeHandler(TorrentClient sender, ITorrent torent, TorrentState currentState, TorrentState previousState);
 
     public partial class TorrentClient
     {
@@ -104,7 +105,7 @@ namespace Bubak.Client
             TorrentRemoved?.Invoke(this, _torrentToRemove);
 
             RemoveTorrentFromList(_torrentToRemove);
-            _torrentToRemove.Dispose();
+            (_torrentToRemove as IDisposable)?.Dispose();
             _torrentToRemove = null;
         }
 
@@ -134,8 +135,6 @@ namespace Bubak.Client
 
             var torrent = EnsureTorrentExist(torrentAdded.Handle);
             torrent.Update();
-
-            //TorrentAdded?.Invoke(this, torrent);
         }
 
         protected virtual void OnTorrentStatsReceived(StatsAlert stats)
@@ -170,8 +169,7 @@ namespace Bubak.Client
 
             var torrent = EnsureTorrentExist(saveResumeData.Handle);
             torrent.ResumeData = saveResumeData.ResumeData;
-            torrent.Update();
-            
+            torrent.Update();          
 
             TorrentResumeDataSaved?.Invoke(this, torrent, saveResumeData.ResumeData);
         }

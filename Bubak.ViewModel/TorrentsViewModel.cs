@@ -10,13 +10,13 @@ using Bubak.Shared.Misc;
 
 namespace Bubak.ViewModel
 {
-    public class TorrentsViewModel
+    public class TorrentsViewModel : ITorrentsViewModel
     {
         private readonly ITorrentClient _client;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
 
-        public ObservableCollection<TorrentViewModel> Torrents { get; }
+        public ObservableCollection<ITorrentViewModel> Torrents { get; }
 
         
 
@@ -26,7 +26,7 @@ namespace Bubak.ViewModel
             _client = client;
             _eventAggregator = eventAggregator;
 
-            Torrents = new ObservableCollection<TorrentViewModel>();
+            Torrents = new ObservableCollection<ITorrentViewModel>();
 
         }
 

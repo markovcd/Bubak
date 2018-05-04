@@ -9,15 +9,26 @@ namespace Bubak.Client
 {
     public partial class TorrentClient : IDisposable, ITorrentClient
     {
+        private readonly Func<TorrentHandle, ITorrent> _torrentCreator;
         private ILogger _logger;
         private ISession _session;
         private TorrentClientSettings _settings;
         private TimeSpan _timeout;
         private volatile bool _isLoopRunning;
         private readonly object _torrentsLock;
-        private volatile Torrent _torrentToRemove;
-               
-        public IReadOnlyList<Torrent> Torrents { get; private set; }
+        private volatile ITorrent _torrentToRemove;
+
+        private IReadOnlyList<ITorrent> _torrents;
+        public IReadOnlyList<ITorrent> Torrents
+        {
+            get
+            {
+                lock (_torrentsLock)
+                {
+                    return _torrents.ToList().AsReadOnly();
+                }
+            }
+        }
 
         public TorrentClientSettings Settings
         {
@@ -26,18 +37,19 @@ namespace Bubak.Client
         }
 
         public TorrentClient(ILogger logger = null) 
-            : this(logger ?? new DebugLogger(), new Session())
+            : this(logger ?? new DebugLogger(), new Session(), h => new Torrent(h, e => new File(e)))
         {
         }
 
-        public TorrentClient(ILogger logger, ISession session)
+        public TorrentClient(ILogger logger, ISession session, Func<TorrentHandle, ITorrent> torrentCreator)
         {
+            _torrentCreator = torrentCreator;
             _torrentsLock = new object();
             _timeout = TimeSpan.FromMilliseconds(10000);
             _logger = logger;
             _session = session;
             _session.SetAlertMask(SessionAlertCategory.All);
-            Torrents = new List<Torrent>();
+            _torrents = new List<ITorrent>();
 
             StartEventLoop();
         }
@@ -87,17 +99,17 @@ namespace Bubak.Client
             _isLoopRunning = false;
         }
 
-        protected Torrent GetTorrentByHandle(TorrentHandle handle)
+        protected ITorrent GetTorrentByHandle(TorrentHandle handle)
         {
             lock (_torrentsLock)
             {
                 var hashCode = handle?.TorrentFile?.InfoHash?.GetHashCode();
                 if (hashCode == null) return null;
-                return Torrents.FirstOrDefault(t => t.GetHashCode() == hashCode);
+                return _torrents.FirstOrDefault(t => t.GetHashCode() == hashCode);
             }
         }
 
-        protected Torrent EnsureTorrentExist(TorrentHandle handle)
+        protected ITorrent EnsureTorrentExist(TorrentHandle handle)
         {
             lock (_torrentsLock)
             {
@@ -106,9 +118,9 @@ namespace Bubak.Client
                 if (torrent == null)
                 {
                     if (handle == null) return null;
-                    torrent = new Torrent(handle);
+                    torrent = _torrentCreator(handle);
 
-                    Torrents = Torrents
+                    _torrents = Torrents
                         .Concat(new[] { torrent })
                         .ToList()
                         .AsReadOnly();
@@ -131,7 +143,7 @@ namespace Bubak.Client
             }
         }
 
-        private bool RemoveTorrentFromList(Torrent torrent)
+        private bool RemoveTorrentFromList(ITorrent torrent)
         {
             lock (_torrentsLock)
             {
@@ -139,7 +151,7 @@ namespace Bubak.Client
 
                 if (remove)
                 {
-                    Torrents = Torrents
+                    _torrents = Torrents
                         .Where(t => !ReferenceEquals(t, torrent))
                         .ToList()
                         .AsReadOnly();
@@ -163,20 +175,32 @@ namespace Bubak.Client
             _session.AsyncAddTorrent(CreateParams(url));
         }
 
-        public Task<Torrent> AddTorrentAsync(string url)
+        public Task<ITorrent> AddTorrentAsync(string url)
         {
-            var tcs = new TaskCompletionSource<Torrent>();
+            var tcs = new TaskCompletionSource<ITorrent>();
             TorrentAdded += (c, t) => tcs.SetResult(t);
             AddTorrent(url);
             return tcs.Task;
         }
 
-        public void RemoveTorrent(Torrent torrent, bool removeData = false)
+        public void RemoveTorrent(ITorrent torrent, bool removeData = false)
         {
             if (torrent == null) return;
             while (_torrentToRemove != null) { }           
             _torrentToRemove = torrent;
-            _session.RemoveTorrent(torrent._handle, removeData);
+            torrent.Remove(_session, removeData);
+        }
+
+        public async Task RemoveTorrentAsync(ITorrent torrent, bool removeData = false)
+        {
+            if (torrent == null) return;
+            await Task.Run(() => 
+            {
+                while (_torrentToRemove != null) { }
+            }).ConfigureAwait(false);
+
+            _torrentToRemove = torrent;
+            torrent.Remove(_session, removeData);
         }
 
         public void Pause()
@@ -189,14 +213,6 @@ namespace Bubak.Client
             _session.Resume();
         }
 
-        public void UpdateTorrents()
-        {
-            lock (_torrentsLock)
-            {
-                foreach (var torrent in Torrents) torrent.Update();
-            }
-        }
-
         public void Dispose()
         {
             StopEventLoop();
@@ -205,10 +221,10 @@ namespace Bubak.Client
             {
                 foreach (var torrent in Torrents)
                 {
-                    torrent.Dispose();
+                    (torrent as IDisposable)?.Dispose();
                 }
 
-                Torrents = null;
+                _torrents = null;
             }
 
             (_session as IDisposable)?.Dispose();

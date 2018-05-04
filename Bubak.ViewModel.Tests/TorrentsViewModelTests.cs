@@ -10,7 +10,7 @@ namespace Bubak.ViewModel.Tests
     public class TorrentsViewModelTests
     {
         private Mock<ITorrentClient> _clientMock;
-        private Mock<ILogger>
+        //private Mock<ILogger>
         private TorrentsViewModel _torrentsViewModel;
 
         [TestInitialize]

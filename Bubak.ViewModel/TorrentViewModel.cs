@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Bubak.ViewModel
 {
-    public class TorrentViewModel : BindableBase
+    public class TorrentViewModel : BindableBase, ITorrentViewModel
     {
-        public Torrent Torrent { get; }
+        public ITorrent Torrent { get; }
 
-        public TorrentViewModel(Torrent torrent)
+        public TorrentViewModel(ITorrent torrent)
         {
             Torrent = torrent;
             Torrent.Updated += (t) => OnPropertyChanged(nameof(Torrent));

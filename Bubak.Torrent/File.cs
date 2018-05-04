@@ -2,13 +2,13 @@
 
 namespace Bubak.Client
 {
-    public class File
+    public class File : IFile
     {
         public long TotalBytes { get; }
         public string Path { get; }
-        public long DownloadedBytes { get; internal set; }      
-        public int Priority { get; internal set; }
-        public bool IsFinished { get; internal set; }
+        public long DownloadedBytes { get; set; }      
+        public int Priority { get; set; }
+        public bool IsFinished { get; set; }
 
         internal File(string path, long totalBytes)
         {

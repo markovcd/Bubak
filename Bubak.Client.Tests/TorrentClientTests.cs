@@ -14,6 +14,7 @@ namespace Bubak.Client.Tests
         Mock<ISession> _sessionMock;
         Mock<IDisposable> _sessionDisposableMock;
         Mock<ILogger> _loggerMock;
+        Func<TorrentHandle, ITorrent> _torrentCreator;
         TorrentClient _client;
 
         
@@ -22,10 +23,10 @@ namespace Bubak.Client.Tests
         public void Setup()
         {
             _sessionMock = new Mock<ISession>();
-            
+            _torrentCreator = (h) => new Mock<ITorrent>().Object;
             _sessionDisposableMock = _sessionMock.As<IDisposable>();
             _loggerMock = new Mock<ILogger>();
-            _client = new TorrentClient(_loggerMock.Object, _sessionMock.Object);
+            _client = new TorrentClient(_loggerMock.Object, _sessionMock.Object, _torrentCreator);
         }
 
         [TestMethod]

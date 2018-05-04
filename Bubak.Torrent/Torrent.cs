@@ -17,17 +17,18 @@ namespace Bubak.Client
         CheckingResumeData = 7
     }
 
-    public class Torrent : IDisposable
+    public class Torrent : IDisposable, ITorrent
     {
-        internal TorrentHandle _handle;
-        private TimeSpan _timeout;
+        private TorrentHandle _handle;
+        private readonly TimeSpan _timeout;
+        private readonly Func<FileEntry, IFile> _fileCreator;
 
-        public event Action<Torrent> Updated;
+        public event Action<ITorrent> Updated;
 
         public string Name { get; }
         public string Comment { get; }
         public DateTime? CreationDate { get; }
-        public IReadOnlyList<File> Files { get; }
+        public IReadOnlyList<IFile> Files { get; }
         public TimeSpan ActiveTime { get; private set; }
         public DateTime AddedDate { get; private set; }
         public DateTime? CompletedDate { get; private set; }
@@ -46,14 +47,14 @@ namespace Bubak.Client
         public bool CanSeed { get; private set; }
         public bool IsSequentialDownload { get; private set; }
         public TorrentState State { get; private set; }
-        public byte[] ResumeData { get; internal set; }
+        public byte[] ResumeData { get; set; }
 
         public string InfoHash { get; }
 
-        public Torrent(TorrentHandle handle)
+        public Torrent(TorrentHandle handle, Func<FileEntry, IFile> fileCreator)
         {
             _handle = handle;
-           
+            _fileCreator = fileCreator;
             _timeout = TimeSpan.FromSeconds(1);
 
             var info = _handle.TorrentFile;
@@ -66,7 +67,7 @@ namespace Bubak.Client
             Files = Enumerable
                 .Range(0, info.NumFiles)
                 .Select(info.FileAt)
-                .Select(f => new File(f))
+                .Select(fileCreator)
                 .ToList()
                 .AsReadOnly();
         }
@@ -101,7 +102,7 @@ namespace Bubak.Client
             status.Dispose();
         }
 
-        private void UpdateFileProperties<T>(IEnumerable<T> vector, Action<File, T> updateAction)
+        private void UpdateFileProperties<T>(IEnumerable<T> vector, Action<IFile, T> updateAction)
         {
             var i = 0;
             foreach (var item in vector) updateAction(Files[i++], item);
@@ -116,6 +117,11 @@ namespace Bubak.Client
         public override int GetHashCode()
         {
             return InfoHash.GetHashCode();
+        }
+
+        public void Remove(ISession session, bool removeData = false)
+        {
+            session.RemoveTorrent(_handle, removeData);
         }
     }
 }
