@@ -219,9 +219,12 @@ namespace Bubak.Client
 
             lock (_torrentsLock)
             {
-                foreach (var torrent in Torrents)
+                if (_torrents != null)
                 {
-                    (torrent as IDisposable)?.Dispose();
+                    foreach (var torrent in _torrents)
+                    {
+                        (torrent as IDisposable)?.Dispose();
+                    }
                 }
 
                 _torrents = null;

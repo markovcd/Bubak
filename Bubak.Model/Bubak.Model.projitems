@@ -9,6 +9,7 @@
     <Import_RootNamespace>Bubak.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\ILogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Download.cs" />

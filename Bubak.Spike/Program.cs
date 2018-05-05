@@ -20,7 +20,8 @@ namespace Bubak.Spike
 
                 var url1 = "magnet:?xt=urn:btih:1a8f9f4c7bd395cda3deaef5af8d22e31f6379ba&dn=Queen+Discography+%40+320Kbps&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969";
                 var url2 = "magnet:?xt=urn:btih:8540440a9bffaf69af24c0cc5dba7311499482fc&dn=Pink+Floyd+-+Discography+%5B1967-2014%40320Kbps%5D&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969";
-                client.AddTorrent(url1);
+                var t = client.AddTorrentAsync(url1).Result;
+                Console.WriteLine(t.Name);
                 //client.AddTorrent(url2);
 
                 while (true)

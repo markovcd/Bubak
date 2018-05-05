@@ -21,7 +21,6 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Bubak.Model\Bubak.Model.projitems*{5a47cfd8-82a6-43a6-be2a-686739d00e98}*SharedItemsImports = 4
 		Bubak.Model\Bubak.Model.projitems*{68338566-e5b6-4b82-a6e8-9bb4010892be}*SharedItemsImports = 4
-		Bubak.Model\Bubak.Model.projitems*{73ba6f7f-cda6-4f7a-b789-fc7cd027318a}*SharedItemsImports = 4
 		Bubak.Model\Bubak.Model.projitems*{c2cd0cd9-1e59-4f72-922d-979b84275c88}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

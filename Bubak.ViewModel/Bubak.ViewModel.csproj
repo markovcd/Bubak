@@ -73,7 +73,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BindableBase.cs" />
     <Compile Include="ITorrentsViewModel.cs" />
     <Compile Include="ITorrentViewModel.cs" />
     <Compile Include="TorrentsViewModel.cs" />
@@ -89,6 +88,5 @@
       <Name>Bubak.Client</Name>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="..\Bubak.Model\Bubak.Model.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
