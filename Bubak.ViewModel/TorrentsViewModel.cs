@@ -16,31 +16,33 @@ namespace Bubak.ViewModel
         private ITorrentClient _client;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
-        private readonly Func<ITorrent, string, ITorrentViewModel> _torrentViewModelCreator;
+        private readonly Func<Torrent, string, ITorrentWrapper> _torrentViewModelCreator;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
 
-        public IObservableCollection<ITorrentViewModel> Torrents { get; }
+        public IObservableCollection<ITorrentWrapper> Torrents { get; }
 
-        public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger, Func<ITorrent, string, ITorrentViewModel> torrentViewModelCreator)
+        public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger, Func<Torrent, string, ITorrentWrapper> torrentViewModelCreator)
         {
             _logger = logger;
             _client = client;
             _eventAggregator = eventAggregator;
             _torrentViewModelCreator = torrentViewModelCreator;
-            Torrents = new BindableCollection<ITorrentViewModel>();
+            Torrents = new BindableCollection<ITorrentWrapper>();
         }
 
-        public async Task<ITorrentViewModel> AddTorrentAsync(string url)
+        public async Task<ITorrentWrapper> AddTorrentAsync(string url)
         {
             var torrent = await _client.AddTorrentAsync(url).TimeoutAfter(_timeout);
             var torrentVm = _torrentViewModelCreator(torrent, url);
             Torrents.Add(torrentVm);
+
             return torrentVm;
         }
 
-        public async Task<bool> RemoveTorrentAsync(ITorrentViewModel torrentVm, bool removeData)
+        public async Task<bool> RemoveTorrentAsync(ITorrentWrapper torrentVm, bool removeData)
         {
             await _client.RemoveTorrentAsync(torrentVm.Torrent, removeData).TimeoutAfter(_timeout);
+
             return Torrents.Remove(torrentVm);
         }
 

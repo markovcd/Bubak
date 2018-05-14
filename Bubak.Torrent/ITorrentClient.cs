@@ -6,7 +6,7 @@ namespace Bubak.Client
     public interface ITorrentClient
     {
         TorrentClientSettings Settings { get; set; }
-        IReadOnlyList<ITorrent> Torrents { get; }
+        IReadOnlyList<Torrent> Torrents { get; }
 
         event TorrentHandler TorrentAdded;
         event TorrentHandler TorrentChecked;
@@ -20,14 +20,11 @@ namespace Bubak.Client
         event TorrentResumeDataHandler TorrentResumeDataSaved;
         event TorrentStateChangeHandler TorrentStateChanged;
         event TorrentHandler TorrentStatsReceived;
+        event TorrentHandler TorrentUpdated;
 
-        void AddTorrent(string url);
-        Task<ITorrent> AddTorrentAsync(string url);
+        Task<Torrent> AddTorrentAsync(string url);
         void Pause();
-        void RemoveTorrent(ITorrent torrent, bool removeData = false);
-        Task RemoveTorrentAsync(ITorrent torrent, bool removeData = false);
+        Task<Torrent> RemoveTorrentAsync(Torrent torrent, bool removeData = false);
         void Resume();
-        void StartEventLoop();
-        void StopEventLoop();
     }
 }

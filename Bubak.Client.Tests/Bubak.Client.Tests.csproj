@@ -84,6 +84,7 @@
   <ItemGroup>
     <Compile Include="TorrentClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TorrentTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

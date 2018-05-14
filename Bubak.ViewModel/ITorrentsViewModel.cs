@@ -6,7 +6,7 @@ namespace Bubak.ViewModel
 {
     public interface ITorrentsViewModel
     {
-        IObservableCollection<ITorrentViewModel> Torrents { get; }
-        Task<ITorrentViewModel> AddTorrentAsync(string url);
+        IObservableCollection<ITorrentWrapper> Torrents { get; }
+        Task<ITorrentWrapper> AddTorrentAsync(string url);
     }
 }

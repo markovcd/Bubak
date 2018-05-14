@@ -74,9 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ITorrentsViewModel.cs" />
-    <Compile Include="ITorrentViewModel.cs" />
+    <Compile Include="ITorrentWrapper.cs" />
     <Compile Include="TorrentsViewModel.cs" />
-    <Compile Include="TorrentViewModel.cs" />
+    <Compile Include="TorrentWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

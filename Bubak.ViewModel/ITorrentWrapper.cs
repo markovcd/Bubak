@@ -2,9 +2,9 @@
 
 namespace Bubak.ViewModel
 {
-    public interface ITorrentViewModel
+    public interface ITorrentWrapper
     {
-        ITorrent Torrent { get; }
+        Torrent Torrent { get; }
         string Url { get; }
     }
 }

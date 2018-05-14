@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bubak.Client;
 using Bubak.Shared.Misc;
+using Caliburn.Micro;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
@@ -13,8 +14,9 @@ namespace Bubak.ViewModel.Tests
     {
         private Mock<ITorrentClient> _clientMock;
         private Mock<ILogger> _loggerMock;     
-        private Mock<ITorrent> _torrentMock;
-        private Mock<ITorrentViewModel> _torrentViewModelMock;
+        private Mock<ITorrentWrapper> _torrentViewModelMock;
+        private Mock<IEventAggregator> _eventAggregatorMock;
+
         private TorrentsViewModel _torrentsViewModel;
 
         [TestInitialize]
@@ -22,8 +24,8 @@ namespace Bubak.ViewModel.Tests
         {
             _clientMock = new Mock<ITorrentClient>();
             _loggerMock = new Mock<ILogger>();
-            _torrentMock = new Mock<ITorrent>();
-            _torrentViewModelMock = new Mock<ITorrentViewModel>();
+            _torrentViewModelMock = new Mock<ITorrentWrapper>();
+            _eventAggregatorMock = new Mock<IEventAggregator>();
         }
 
         [TestMethod]
@@ -31,14 +33,14 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            Func<ITorrent, string, ITorrentViewModel> torrentVmCreator = (t, u) =>
+            Func<Torrent, string, ITorrentWrapper> torrentVmCreator = (t, u) =>
             {
                 _torrentViewModelMock.SetupGet(tvm => tvm.Url).Returns(u);
                 _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
                 return _torrentViewModelMock.Object;
             };
 
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, null, _loggerMock.Object, torrentVmCreator);
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, torrentVmCreator);
 
             var url = "some url";
 
@@ -58,14 +60,14 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            Func<ITorrent, string, ITorrentViewModel> torrentVmCreator = (t, u) =>
+            Func<Torrent, string, ITorrentWrapper> torrentVmCreator = (t, u) =>
             {
                 _torrentViewModelMock.SetupGet(tvm => tvm.Url).Returns(u);
                 _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
                 return _torrentViewModelMock.Object;
             };
             
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, null, _loggerMock.Object, torrentVmCreator);
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, torrentVmCreator);
 
             var url = "some url";
 
@@ -83,13 +85,36 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, null, _loggerMock.Object, null);
-
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
             _torrentsViewModel.Torrents.Add(_torrentViewModelMock.Object);
+
+            // Act
+
             var removed = await _torrentsViewModel.RemoveTorrentAsync(_torrentViewModelMock.Object, false);
+
+            // Assert
 
             Assert.IsTrue(removed);
             Assert.IsFalse(_torrentsViewModel.Torrents.Any());
+        }
+
+        [TestMethod]
+        public async Task RemoveTorrentAsync_RemovesTorrentInClient_WhenCalled()
+        {
+            // Arrange
+
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
+            _torrentsViewModel.Torrents.Add(_torrentViewModelMock.Object);
+            _torrentViewModelMock.SetupGet(t => t.Torrent).Returns(new Torrent());
+
+            // Act
+
+            var removed = await _torrentsViewModel.RemoveTorrentAsync(_torrentViewModelMock.Object, true);
+
+            // Assert
+
+            _clientMock.Verify(c => c.RemoveTorrentAsync(_torrentViewModelMock.Object.Torrent, true), Times.Once);
+            Assert.IsTrue(removed);
         }
 
         [TestMethod]
@@ -97,12 +122,52 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, null, _loggerMock.Object, null);
-;
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
+;           _torrentsViewModel.Torrents.Add(new Mock<ITorrentWrapper>().Object);
+
+            //Act
+
             var removed = await _torrentsViewModel.RemoveTorrentAsync(_torrentViewModelMock.Object, false);
 
+            // Assert
+
             Assert.IsFalse(removed);
-            Assert.IsFalse(_torrentsViewModel.Torrents.Any());
+            Assert.AreEqual(1, _torrentsViewModel.Torrents.Count);
+        }
+
+        [TestMethod]
+        public void Dispose_DisposesClient_WhenCalled()
+        {
+            // Arragne
+
+            _clientMock.As<IDisposable>();
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
+
+            // Act
+
+            _torrentsViewModel.Dispose();
+
+            // Assert
+
+            _clientMock.As<IDisposable>().Verify(d => d.Dispose(), Times.Once);
+        }
+
+        [TestMethod]
+        public void Dispose_DisposesClientOnce_WhenCalledTwice()
+        {
+            // Arragne
+
+            _clientMock.As<IDisposable>();
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
+
+            // Act
+
+            _torrentsViewModel.Dispose();
+            _torrentsViewModel.Dispose();
+
+            // Assert
+
+            _clientMock.As<IDisposable>().Verify(d => d.Dispose(), Times.Once);
         }
     }
 }

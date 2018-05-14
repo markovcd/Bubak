@@ -28,12 +28,12 @@ namespace Bubak.Spike
                 {
                     
                     Console.ReadKey();
-                    client.Pause();
+                 
                     Console.ReadKey();
                     client.Resume();
                     Console.ReadKey();
-                    client.RemoveTorrent(client.Torrents.FirstOrDefault(), true);
-
+                    t = client.RemoveTorrentAsync(client.Torrents.FirstOrDefault(), true).Result;
+                    Console.WriteLine(t.Name);
                 }
             }
 
