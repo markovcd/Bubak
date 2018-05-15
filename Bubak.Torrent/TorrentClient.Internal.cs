@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Bubak.Shared.Misc;
 using Ragnar;
 
 namespace Bubak.Client
@@ -42,7 +41,7 @@ namespace Bubak.Client
                         }
                     }
 
-                    UpdateTorrents();
+                    _session.PostTorrentUpdates();
 
                     await Task.Delay(1000).ConfigureAwait(false);
                 }

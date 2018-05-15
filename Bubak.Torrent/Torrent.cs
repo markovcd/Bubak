@@ -99,6 +99,9 @@ namespace Bubak.Client
                 SavePath, DownloadRate, ErrorMessage, FinishedTime, IsPaused, Priority, Progress, QueuePosition,
                 SeedingTime, CanSeed, IsSequentialDownload, State, ResumeData);
 
+        public Torrent SetFiles(IEnumerable<int> filePriorities, IEnumerable<long> fileProgresses) 
+            => SetFiles(UpdateFiles(filePriorities, fileProgresses));
+
         public Torrent Update(TorrentStatus status, IEnumerable<File> files) => status == null
             ? throw new ArgumentNullException(nameof(status))
             : new Torrent(InfoHash, Name, Comment, CreationDate, files.ToList().AsReadOnly(), status.ActiveTime, status.AddedTime,

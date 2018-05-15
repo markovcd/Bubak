@@ -1,5 +1,6 @@
 ﻿using Ragnar;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Bubak.Client
@@ -100,11 +101,16 @@ namespace Bubak.Client
 
         protected virtual void OnTorrentRemoved(TorrentRemovedAlert torentRemoved)
         {
-            _logger.Log(torentRemoved.Message);
+            try
+            {
+                _logger.Log(torentRemoved.Message);
 
-            RemoveTorrent(_torrentToRemove);
-
-            _torrentToRemove = null;
+                if (!RemoveTorrent(_torrentToRemove)) throw new InvalidOperationException(); 
+            }
+            finally
+            {
+                _torrentToRemove = null;
+            }
         }
 
         protected virtual void OnTorrentPaused(TorrentPausedAlert torrentPaused)
@@ -147,7 +153,9 @@ namespace Bubak.Client
 
             foreach (var status in stateUpdate.Statuses)
             {
-
+                var infoHash = status.InfoHash.ToHex();
+                TryGetTorrent(infoHash, out var torrent, out var handle);
+                SetTorrent(torrent.Update(status, handle.GetFilePriorities(), handle.GetFileProgresses()));                
             }
         }
 
