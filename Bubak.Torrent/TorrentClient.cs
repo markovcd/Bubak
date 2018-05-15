@@ -65,10 +65,14 @@ namespace Bubak.Client
             }).ConfigureAwait(false);
 
             _torrentToRemove = torrent.InfoHash;
-            _session.RemoveTorrent(_torrents[torrent.InfoHash].handle, removeData);
+
+            if (!TryGetTorrent(torrent.InfoHash, out TorrentHandle handle)) throw new KeyNotFoundException();
+
+            _session.RemoveTorrent(handle, removeData);
 
             return await tcs.Task;
         }
+
 
         public void Pause()
         {

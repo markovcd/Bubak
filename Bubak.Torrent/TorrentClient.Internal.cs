@@ -30,7 +30,6 @@ namespace Bubak.Client
             {
                 while (_isLoopRunning)
                 {
-                    _session.PostTorrentUpdates();
                     if (_session.Alerts.PeekWait(_timeout))
                     {
                         var alerts = _session.Alerts.PopAll();
@@ -42,7 +41,9 @@ namespace Bubak.Client
                             }
                         }
                     }
-                   
+
+                    UpdateTorrents();
+
                     await Task.Delay(1000).ConfigureAwait(false);
                 }
             }
@@ -120,6 +121,28 @@ namespace Bubak.Client
                 _torrents[torrent.InfoHash] = ((torrent, _torrents[torrent.InfoHash].handle));
                 TorrentUpdated?.Invoke(this, torrent);
                 return true;
+            }
+        }
+
+        protected Torrent UpdateTorrent(Torrent torrent)
+        {
+            if (!TryGetTorrent(torrent.InfoHash, out TorrentHandle handle)) throw new KeyNotFoundException();
+
+            var status = handle.QueryStatus();
+            var filePriorities = handle.GetFilePriorities();
+            var fileProgresses = handle.GetFileProgresses();
+
+            var newTorrent = torrent.Update(status, filePriorities, fileProgresses);
+            if (!SetTorrent(newTorrent)) throw new InvalidOperationException();
+
+            return newTorrent;
+        }
+
+        protected IEnumerable<Torrent> UpdateTorrents()
+        {
+            foreach (var torrent in _torrents.Values.Select(t => t.torrent))
+            {
+                yield return UpdateTorrent(torrent);
             }
         }
 
