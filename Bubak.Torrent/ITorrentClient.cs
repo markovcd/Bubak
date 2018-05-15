@@ -21,10 +21,9 @@ namespace Bubak.Client
         event TorrentStateChangeHandler TorrentStateChanged;
         event TorrentHandler TorrentStatsReceived;
         event TorrentHandler TorrentUpdated;
-
-        Task<Torrent> AddTorrentAsync(string url);
-        void Pause();
+        Task<Torrent> AddTorrentAsync(string url);       
         Task<Torrent> RemoveTorrentAsync(Torrent torrent, bool removeData = false);
+        void Pause();
         void Resume();
     }
 }
