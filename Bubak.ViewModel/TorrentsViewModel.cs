@@ -19,6 +19,7 @@ namespace Bubak.ViewModel
         private readonly Func<Torrent, string, ITorrentWrapper> _torrentViewModelCreator;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
 
+
         public IObservableCollection<ITorrentWrapper> Torrents { get; }
 
         public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger, Func<Torrent, string, ITorrentWrapper> torrentViewModelCreator)
@@ -28,6 +29,19 @@ namespace Bubak.ViewModel
             _eventAggregator = eventAggregator;
             _torrentViewModelCreator = torrentViewModelCreator;
             Torrents = new BindableCollection<ITorrentWrapper>();
+            
+            _client.TorrentAdded += Client_TorrentAdded;
+            _client.TorrentRemoved += Client_TorrentRemoved;
+        }
+
+        private void Client_TorrentRemoved(TorrentClient sender, Torrent torent)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void Client_TorrentAdded(TorrentClient sender, Torrent torent)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<ITorrentWrapper> AddTorrentAsync(string url)
