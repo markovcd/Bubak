@@ -121,7 +121,7 @@ namespace Bubak.ViewModel.Tests
             // Arrange
 
             _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
-;           _torrentsViewModel.Torrents.Add(new Mock<ITorrentWrapper>().Object);
+            _torrentsViewModel.Torrents.Add(new Mock<ITorrentWrapper>().Object);
 
             //Act
 

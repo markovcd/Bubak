@@ -15,7 +15,7 @@ namespace Bubak.ViewModel.Tests
         }
 
         [TestMethod]
-        public void RaisesOnPropertyChanged_WhenTorrentUpdated()
+        public void Torrent_RaisesOnPropertyChanged_WhenSet()
         {
             // Arrange
 
@@ -31,5 +31,7 @@ namespace Bubak.ViewModel.Tests
 
             Assert.IsTrue(isFired);
         }
+
+        
     }
 }

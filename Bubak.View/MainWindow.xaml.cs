@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Bubak.ViewModel;
 
 namespace Bubak.View
 {
@@ -23,6 +24,7 @@ namespace Bubak.View
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = new TorrentsViewModel();
         }
     }
 }
