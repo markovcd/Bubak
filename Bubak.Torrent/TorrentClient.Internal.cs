@@ -153,7 +153,5 @@ namespace Bubak.Client
                 SavePath = Settings.SavePath
             };
         }
-
-        
     }
 }

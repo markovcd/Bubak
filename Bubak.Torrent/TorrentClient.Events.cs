@@ -3,11 +3,11 @@ using System;
 
 namespace Bubak.Client
 {
-    public delegate void TorrentResumeDataHandler(TorrentClient sender, Torrent torent, byte[] resumeData);
-    public delegate void TorrentHandler(TorrentClient sender, Torrent torent);
-    public delegate void TorrentFileHandler(TorrentClient sender, Torrent torent, File file);
-    public delegate void TorrentFileNameHandler(TorrentClient sender, Torrent torent, File file, string fileName);
-    public delegate void TorrentStateChangeHandler(TorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
+    public delegate void TorrentResumeDataHandler(ITorrentClient sender, Torrent torent, byte[] resumeData);
+    public delegate void TorrentHandler(ITorrentClient sender, Torrent torent);
+    public delegate void TorrentFileHandler(ITorrentClient sender, Torrent torent, File file);
+    public delegate void TorrentFileNameHandler(ITorrentClient sender, Torrent torent, File file, string fileName);
+    public delegate void TorrentStateChangeHandler(ITorrentClient sender, Torrent torent, TorrentState currentState, TorrentState previousState);
 
     public partial class TorrentClient
     {
@@ -103,7 +103,7 @@ namespace Bubak.Client
             {
                 _logger.Log(torentRemoved.Message);
 
-                if (!RemoveTorrent(_torrentToRemove)) throw new InvalidOperationException(); 
+                if (!RemoveTorrent(_torrentToRemove)) throw new InvalidOperationException();
             }
             finally
             {

@@ -19,14 +19,13 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            var url = "some url";
-            var wrapper = new TorrentWrapper(url, new Torrent());
+            var wrapper = new TorrentWrapper(new Torrent());
             var isFired = false;
             wrapper.PropertyChanged += (s, a) => isFired = a.PropertyName == nameof(TorrentWrapper.Torrent);
 
             // Act
 
-            //_torrentMock.Raise(t => t.Updated += null, _torrentMock.Object);
+            wrapper.Torrent = new Torrent();
 
             // Assert
 

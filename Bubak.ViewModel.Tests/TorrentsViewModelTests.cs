@@ -33,9 +33,8 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            Func<Torrent, string, ITorrentWrapper> torrentVmCreator = (t, u) =>
+            Func<Torrent, ITorrentWrapper> torrentVmCreator = (t) =>
             {
-                _torrentViewModelMock.SetupGet(tvm => tvm.Url).Returns(u);
                 _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
                 return _torrentViewModelMock.Object;
             };
@@ -60,9 +59,8 @@ namespace Bubak.ViewModel.Tests
         {
             // Arrange
 
-            Func<Torrent, string, ITorrentWrapper> torrentVmCreator = (t, u) =>
+            Func<Torrent, ITorrentWrapper> torrentVmCreator = (t) =>
             {
-                _torrentViewModelMock.SetupGet(tvm => tvm.Url).Returns(u);
                 _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
                 return _torrentViewModelMock.Object;
             };

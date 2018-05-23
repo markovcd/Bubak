@@ -1,9 +1,9 @@
-﻿using Bubak.Client.Wrappers;
+﻿using Ragnar;
 using System;
 
 namespace Bubak.Client
 {
-    public struct File
+    public class File
     {
         public long TotalBytes { get; }
         public string Name { get; }
@@ -11,7 +11,11 @@ namespace Bubak.Client
         public int Priority { get; }
         public bool IsFinished { get; }
 
-        public File(string name, long totalBytes, long downloadedBytes = 0, int priority = -1, bool isFinished = false) : this()
+        public File()
+        {
+        }
+
+        public File(string name, long totalBytes, long downloadedBytes = 0, int priority = -1, bool isFinished = false)
         {
             TotalBytes = totalBytes;
             Name = name ?? throw new ArgumentNullException(nameof(name));

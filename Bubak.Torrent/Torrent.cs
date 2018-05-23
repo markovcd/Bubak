@@ -1,4 +1,4 @@
-﻿using Bubak.Client.Wrappers;
+﻿using Ragnar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace Bubak.Client
 
     public enum TorrentPosition { Up, Down, Top, Bottom }
 
-    public struct Torrent
+    public class Torrent
     {
         public string Name { get; }
         public string Comment { get; }
@@ -54,11 +54,15 @@ namespace Bubak.Client
                 .Range(0, info.NumFiles)
                 .Select(i => File.FromFileEntry(info.FileAt(i)));
 
+        public Torrent()
+        {
+        }
+
         public Torrent(string infoHash, string name, string comment, DateTime? creationDate, IReadOnlyList<File> files, 
             TimeSpan? activeTime = null, DateTime? addedDate = null, DateTime? completedDate = null, string savePath = null, 
             int downloadRate = -1, string errorMessage = null, TimeSpan? finishedTime = null,  bool isPaused = false, 
             int priority = -1, float progress = 0, int queuePosition = -1, TimeSpan? seedingTime = null, bool canSeed = false, 
-            bool isSequentialDownload = false, TorrentState state = default(TorrentState), IReadOnlyList<byte> resumeData = null) : this()
+            bool isSequentialDownload = false, TorrentState state = default(TorrentState), IReadOnlyList<byte> resumeData = null) 
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             InfoHash = infoHash ?? throw new ArgumentNullException(nameof(infoHash));
@@ -80,8 +84,7 @@ namespace Bubak.Client
             CanSeed = canSeed;
             IsSequentialDownload = isSequentialDownload;
             State = state;
-            ResumeData = resumeData;
-            
+            ResumeData = resumeData;           
         }
 
         public Torrent SetResumeData(IEnumerable<byte> resumeData) => resumeData == null

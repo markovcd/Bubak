@@ -5,13 +5,16 @@ namespace Bubak.ViewModel
 {
     public class TorrentWrapper : PropertyChangedBase, ITorrentWrapper
     {
-        public Torrent Torrent { get; }
-        public string Url { get; }
+        private Torrent _torrent;
+        public Torrent Torrent
+        {
+            get => _torrent;
+            set => Set(ref _torrent, value);
+        }
 
-        public TorrentWrapper(string url, Torrent torrent)
+        public TorrentWrapper(Torrent torrent)
         {
             Torrent = torrent;
-            Url = url;
             //Torrent.Updated += (t) => NotifyOfPropertyChange(() => Torrent);
         }
     }

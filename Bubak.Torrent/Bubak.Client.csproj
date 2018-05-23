@@ -70,10 +70,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Wrappers\AnnounceEntry.cs" />
-    <Compile Include="Wrappers\Class1.cs" />
-    <Compile Include="Wrappers\FileEntry.cs" />
-    <Compile Include="Wrappers\ITorrentHandle.cs" />
     <Compile Include="TorrentClient.cs" />
     <Compile Include="File.cs" />
     <Compile Include="ITorrentClient.cs" />
@@ -82,11 +78,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TorrentClient.Events.cs" />
     <Compile Include="TorrentClientSettings.cs" />
-    <Compile Include="Wrappers\PartialPieceInfo.cs" />
-    <Compile Include="Wrappers\PeerInfo.cs" />
-    <Compile Include="Wrappers\TorrentHandle.cs" />
-    <Compile Include="Wrappers\TorrentInfo.cs" />
-    <Compile Include="Wrappers\TorrentStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="boost_chrono-vc120-mt-1_55.dll">

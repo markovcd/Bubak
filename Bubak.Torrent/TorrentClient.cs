@@ -73,7 +73,6 @@ namespace Bubak.Client
             return await tcs.Task;
         }
 
-
         public void Pause()
         {
             _session.Pause();
