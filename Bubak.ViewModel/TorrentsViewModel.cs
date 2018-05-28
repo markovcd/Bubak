@@ -16,23 +16,23 @@ namespace Bubak.ViewModel
         private ITorrentClient _client;
         private readonly IEventAggregator _eventAggregator;
         private readonly ILogger _logger;
-        private readonly Func<Torrent, ITorrentWrapper> _torrentWrapperCreator;
+        private readonly ITorrentWrapperFactory _torrentWrapperFactory;
         private readonly TimeSpan _timeout = TimeSpan.FromSeconds(10);
 
         private IDictionary<string, ITorrentWrapper> _torrents;
         public IObservableCollection<ITorrentWrapper> Torrents { get; }
 
-        public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger, Func<Torrent, ITorrentWrapper> torrentWrapperCreator)
+        public TorrentClientSettings Settings => _client.Settings;
+
+        public TorrentsViewModel(ITorrentClient client, IEventAggregator eventAggregator, ILogger logger, ITorrentWrapperFactory torrentWrapperFactory)
         {
             _logger = logger;
             _client = client;
             _eventAggregator = eventAggregator;
-            _torrentWrapperCreator = torrentWrapperCreator;
+            _torrentWrapperFactory = torrentWrapperFactory;
             Torrents = new BindableCollection<ITorrentWrapper>();
             _torrents = new Dictionary<string, ITorrentWrapper>();
             
-            _client.TorrentAdded += Client_TorrentAdded;
-            _client.TorrentRemoved += Client_TorrentRemoved;
             _client.TorrentUpdated += Client_TorrentUpdated;
         }
 
@@ -41,33 +41,22 @@ namespace Bubak.ViewModel
             _torrents[torrent.InfoHash].Torrent = torrent;
         }
 
-        private void Client_TorrentRemoved(ITorrentClient sender, Torrent torrent)
-        {
-            Torrents.Remove(_torrents[torrent.InfoHash]);
-            _torrents.Remove(torrent.InfoHash);
-        }
-
-        private void Client_TorrentAdded(ITorrentClient sender, Torrent torrent)
-        {
-            var wrapper = _torrentWrapperCreator(torrent);
-            _torrents.Add(torrent.InfoHash, wrapper);
-            Torrents.Add(wrapper);
-        }
-
         public async Task<ITorrentWrapper> AddTorrentAsync(string url)
         {
-            var torrent = await _client.AddTorrentAsync(url).TimeoutAfter(_timeout);
-            var torrentVm = _torrentWrapperCreator(torrent);
-            Torrents.Add(torrentVm);
+            var torrent = await _client.AddTorrentAsync(url);
 
-            return torrentVm;
+            var wrapper = _torrentWrapperFactory.Create(torrent);
+            _torrents.Add(torrent.InfoHash, wrapper);
+            Torrents.Add(wrapper);
+
+            return wrapper;
         }
 
         public async Task<bool> RemoveTorrentAsync(ITorrentWrapper torrentVm, bool removeData)
         {
-            await _client.RemoveTorrentAsync(torrentVm.Torrent, removeData).TimeoutAfter(_timeout);
+            await _client.RemoveTorrentAsync(torrentVm.Torrent, removeData).TimeoutAfter(_timeout).ConfigureAwait(false);
 
-            return Torrents.Remove(torrentVm);
+            return Torrents.Remove(torrentVm) && _torrents.Remove(torrentVm.Torrent.InfoHash);
         }
 
         public void Dispose()

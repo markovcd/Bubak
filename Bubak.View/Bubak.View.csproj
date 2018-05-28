@@ -97,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bootstrapper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -130,6 +131,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Bubak.Torrent\Bubak.Client.csproj">
+      <Project>{68338566-E5B6-4B82-A6E8-9BB4010892BE}</Project>
+      <Name>Bubak.Client</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Bubak.ViewModel\Bubak.ViewModel.csproj">
       <Project>{73ba6f7f-cda6-4f7a-b789-fc7cd027318a}</Project>
       <Name>Bubak.ViewModel</Name>

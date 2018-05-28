@@ -4,9 +4,20 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Bubak.View"
+        xmlns:vm="clr-namespace:Bubak.ViewModel;assembly=Bubak.ViewModel"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <DataTemplate x:Key="TorrentTemplate" DataType="{x:Type vm:ITorrentWrapper}">
+            <StackPanel>
+                <TextBlock Text="{Binding Torrent.Name}"/>
+                <ProgressBar Minimum="0" Maximum="1" Value="{Binding Torrent.Progress, Mode=OneWay}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Window.Resources>
     <Grid>
-        <List
+        <ListBox ItemsSource="{Binding Torrents}" ItemTemplate="{StaticResource TorrentTemplate}">
+
+        </ListBox>
     </Grid>
 </Window>

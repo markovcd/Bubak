@@ -24,7 +24,7 @@ namespace Bubak.Client
         {
             get
             {
-                lock (_torrentsLock)
+                //lock (_torrentsLock)
                 {
                     return _torrents.Select(kv => kv.Value.torrent).OrderBy(t => t.QueuePosition).ToList().AsReadOnly();
                 }
@@ -49,7 +49,7 @@ namespace Bubak.Client
         public Task<Torrent> AddTorrentAsync(string url)
         {
             var tcs = new TaskCompletionSource<Torrent>();
-            TorrentAdded += (c, t) => tcs.SetResult(t);
+            TorrentAdded += (c, t) => tcs.SetResult(t); 
             _session.AsyncAddTorrent(CreateParams(url));
             return tcs.Task;
         }

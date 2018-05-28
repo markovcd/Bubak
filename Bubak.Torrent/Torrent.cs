@@ -58,6 +58,12 @@ namespace Bubak.Client
         {
         }
 
+        public Torrent(string infoHash, string name)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            InfoHash = infoHash ?? throw new ArgumentNullException(nameof(infoHash));
+        }
+
         public Torrent(string infoHash, string name, string comment, DateTime? creationDate, IReadOnlyList<File> files, 
             TimeSpan? activeTime = null, DateTime? addedDate = null, DateTime? completedDate = null, string savePath = null, 
             int downloadRate = -1, string errorMessage = null, TimeSpan? finishedTime = null,  bool isPaused = false, 

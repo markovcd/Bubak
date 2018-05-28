@@ -15,6 +15,7 @@ namespace Bubak.ViewModel.Tests
         private Mock<ITorrentClient> _clientMock;
         private Mock<ILogger> _loggerMock;     
         private Mock<ITorrentWrapper> _torrentViewModelMock;
+        private Mock<ITorrentWrapperFactory> _torrentWrapperFactory;
         private Mock<IEventAggregator> _eventAggregatorMock;
 
         private TorrentsViewModel _torrentsViewModel;
@@ -26,22 +27,20 @@ namespace Bubak.ViewModel.Tests
             _loggerMock = new Mock<ILogger>();
             _torrentViewModelMock = new Mock<ITorrentWrapper>();
             _eventAggregatorMock = new Mock<IEventAggregator>();
+            _torrentWrapperFactory = new Mock<ITorrentWrapperFactory>();
         }
 
         [TestMethod]
         public async Task AddTorrentAsync_AddsTorrentInViewModel_WhenCalled()
         {
             // Arrange
-
-            Func<Torrent, ITorrentWrapper> torrentVmCreator = (t) =>
-            {
-                _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
-                return _torrentViewModelMock.Object;
-            };
-
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, torrentVmCreator);
-
             var url = "some url";
+            var torrent = new Torrent("hash", "name");
+            _clientMock.Setup(c => c.AddTorrentAsync(url)).ReturnsAsync(torrent);
+            _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(torrent);
+            _torrentWrapperFactory.Setup(f => f.Create(torrent)).Returns(_torrentViewModelMock.Object);
+
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, _torrentWrapperFactory.Object);
 
             // Act
 
@@ -49,7 +48,7 @@ namespace Bubak.ViewModel.Tests
 
             // Assert
 
-            Assert.IsNull(torrentVm.Torrent);
+            Assert.AreEqual(torrent, torrentVm.Torrent);
             Assert.AreEqual(1, _torrentsViewModel.Torrents.Count);
             Assert.AreEqual(torrentVm, _torrentsViewModel.Torrents[0]);
         }
@@ -58,16 +57,13 @@ namespace Bubak.ViewModel.Tests
         public async Task AddTorrentAsync_AddsTorrentInClient_WhenCalled()
         {
             // Arrange
-
-            Func<Torrent, ITorrentWrapper> torrentVmCreator = (t) =>
-            {
-                _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(t);
-                return _torrentViewModelMock.Object;
-            };
-            
-            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, torrentVmCreator);
-
             var url = "some url";
+            var torrent = new Torrent("hash", "name");
+            _clientMock.Setup(c => c.AddTorrentAsync(url)).ReturnsAsync(torrent);
+            _torrentViewModelMock.SetupGet(tvm => tvm.Torrent).Returns(torrent);
+            _torrentWrapperFactory.Setup(f => f.Create(torrent)).Returns(_torrentViewModelMock.Object);
+
+            _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, _torrentWrapperFactory.Object);
 
             // Act
 
@@ -103,7 +99,8 @@ namespace Bubak.ViewModel.Tests
 
             _torrentsViewModel = new TorrentsViewModel(_clientMock.Object, _eventAggregatorMock.Object, _loggerMock.Object, null);
             _torrentsViewModel.Torrents.Add(_torrentViewModelMock.Object);
-            _torrentViewModelMock.SetupGet(t => t.Torrent).Returns(new Torrent());
+            var torrent = new Torrent("hash", "name");
+            _torrentViewModelMock.SetupGet(t => t.Torrent).Returns(torrent);
 
             // Act
 

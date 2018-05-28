@@ -1,4 +1,5 @@
-﻿using Caliburn.Micro;
+﻿using Bubak.Client;
+using Caliburn.Micro;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -8,5 +9,6 @@ namespace Bubak.ViewModel
     {
         IObservableCollection<ITorrentWrapper> Torrents { get; }
         Task<ITorrentWrapper> AddTorrentAsync(string url);
+        TorrentClientSettings Settings { get; }
     }
 }

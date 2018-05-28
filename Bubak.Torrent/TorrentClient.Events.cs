@@ -133,7 +133,7 @@ namespace Bubak.Client
         {
             _logger.Log(torrentAdded.Message);
 
-            var torrent = EnsureTorrentExist(torrentAdded.Handle);
+            //var torrent = EnsureTorrentExist(torrentAdded.Handle);
         }
 
         protected virtual void OnTorrentStatsReceived(StatsAlert stats)
