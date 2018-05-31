@@ -24,7 +24,7 @@ namespace Bubak.Client
         {
             get
             {
-                //lock (_torrentsLock)
+                lock (_torrentsLock)
                 {
                     return _torrents.Select(kv => kv.Value.torrent).OrderBy(t => t.QueuePosition).ToList().AsReadOnly();
                 }
@@ -66,7 +66,8 @@ namespace Bubak.Client
 
             _torrentToRemove = torrent.InfoHash;
 
-            if (!TryGetTorrent(torrent.InfoHash, out TorrentHandle handle)) throw new KeyNotFoundException();
+            if (!TryGetTorrent(torrent.InfoHash, out TorrentHandle handle))
+                throw new KeyNotFoundException();
 
             _session.RemoveTorrent(handle, removeData);
 
@@ -85,12 +86,26 @@ namespace Bubak.Client
 
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
             StopEventLoop();
 
-            (_session as IDisposable)?.Dispose();
-            (_logger as IDisposable)?.Dispose();
-            _session = null;
-            _logger = null;
+            if (disposing)
+            {
+                (_session as IDisposable)?.Dispose();
+                (_logger as IDisposable)?.Dispose();
+                _session = null;
+                _logger = null;
+            }
+        }
+
+        ~TorrentClient()
+        {
+            Dispose(false);
         }
     }
 }

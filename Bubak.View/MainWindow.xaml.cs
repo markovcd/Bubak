@@ -37,5 +37,11 @@ namespace Bubak.View
             var url1 = "magnet:?xt=urn:btih:1a8f9f4c7bd395cda3deaef5af8d22e31f6379ba&dn=Queen+Discography+%40+320Kbps&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969";
             vm.AddTorrentAsync(url1);
         }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            (DataContext as IDisposable)?.Dispose();
+            DataContext = null;
+        }
     }
 }

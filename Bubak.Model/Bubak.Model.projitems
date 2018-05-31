@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Misc\ObservableConcurrentDictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Misc\ILogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Model\Download.cs" />
@@ -17,6 +18,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Model\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Misc\" />
   </ItemGroup>
 </Project>

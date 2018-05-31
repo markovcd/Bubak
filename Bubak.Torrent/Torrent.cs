@@ -1,19 +1,35 @@
 ﻿using Ragnar;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Bubak.Client
 {
     public enum TorrentState
     {
+        [Description("Queued for checking")]
         QueuedForChecking = 0,
+
+        [Description("Checking files")]
         CheckingFiles = 1,
+
+        [Description("Downloading metadata")]
         DownloadingMetadata = 2,
+
+        [Description("Downloading")]
         Downloading = 3,
+
+        [Description("Finished")]
         Finished = 4,
+
+        [Description("Seeding")]
         Seeding = 5,
+
+        [Description("Allocating")]
         Allocating = 6,
+
+        [Description("Checking resume data")]
         CheckingResumeData = 7
     }
 

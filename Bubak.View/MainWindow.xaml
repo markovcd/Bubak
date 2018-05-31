@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:Bubak.View"
         xmlns:vm="clr-namespace:Bubak.ViewModel;assembly=Bubak.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Closed="Window_Closed">
     <Window.Resources>
         <DataTemplate x:Key="TorrentTemplate" DataType="{x:Type vm:ITorrentWrapper}">
             <StackPanel>
                 <TextBlock Text="{Binding Torrent.Name}"/>
                 <ProgressBar Minimum="0" Maximum="1" Value="{Binding Torrent.Progress, Mode=OneWay}"/>
+                <TextBlock Text="{Binding Torrent.State}"/>
             </StackPanel>
         </DataTemplate>
     </Window.Resources>

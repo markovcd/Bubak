@@ -11,6 +11,7 @@ using Bubak.Shared;
 
 namespace Bubak.ViewModel
 {
+
     public class TorrentsViewModel : PropertyChangedBase, ITorrentsViewModel, IDisposable
     {
         private ITorrentClient _client;
@@ -32,7 +33,7 @@ namespace Bubak.ViewModel
             _torrentWrapperFactory = torrentWrapperFactory;
             Torrents = new BindableCollection<ITorrentWrapper>();
             _torrents = new Dictionary<string, ITorrentWrapper>();
-            
+
             _client.TorrentUpdated += Client_TorrentUpdated;
         }
 
@@ -43,7 +44,8 @@ namespace Bubak.ViewModel
 
         public async Task<ITorrentWrapper> AddTorrentAsync(string url)
         {
-            var torrent = await _client.AddTorrentAsync(url);
+            var torrent = await _client.AddTorrentAsync(url)
+                .TimeoutAfter(_timeout);
 
             var wrapper = _torrentWrapperFactory.Create(torrent);
             _torrents.Add(torrent.InfoHash, wrapper);
@@ -61,8 +63,22 @@ namespace Bubak.ViewModel
 
         public void Dispose()
         {
-            (_client as IDisposable)?.Dispose();
-            _client = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                (_client as IDisposable)?.Dispose();
+                _client = null;
+            }
+        }
+
+        ~TorrentsViewModel()
+        {
+            Dispose(false);
         }
     }
 }

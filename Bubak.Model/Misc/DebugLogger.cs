@@ -17,7 +17,7 @@ namespace Bubak.Shared.Misc
 
         public void LogException(Exception exception, [CallerMemberName] string callerName = null)
         {
-            Log($"{exception.GetType()} - {exception.Message}{Environment.NewLine}{exception.StackTrace}");
+            Log($"{exception.GetType()} - {exception.Message}{Environment.NewLine}{exception.StackTrace}", callerName);
         }
     }
 }

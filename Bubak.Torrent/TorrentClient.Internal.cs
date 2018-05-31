@@ -9,7 +9,7 @@ namespace Bubak.Client
     public partial class TorrentClient
     {          
         private readonly TimeSpan _timeout = TimeSpan.FromMilliseconds(10000);
-        //private readonly object _torrentsLock = new object();
+        private readonly object _torrentsLock = new object();
 
         private volatile bool _isLoopRunning;       
         private string _torrentToRemove;
@@ -65,7 +65,7 @@ namespace Bubak.Client
 
         protected bool TryGetTorrent(string infoHash, out Torrent torrent, out TorrentHandle handle)
         {
-            //lock (_torrentsLock)
+            lock (_torrentsLock)
             {
                 if (infoHash == null) throw new NullReferenceException(nameof(infoHash));
                 
@@ -85,7 +85,7 @@ namespace Bubak.Client
 
         protected Torrent AddTorrent(TorrentHandle handle)
         {
-            //lock (_torrentsLock)
+            lock (_torrentsLock)
             {
                 var torrent = Torrent.FromTorrentInfo(handle.TorrentFile);
                 _torrents.Add(handle.TorrentFile.InfoHash, (torrent, handle));
@@ -96,7 +96,7 @@ namespace Bubak.Client
 
         protected bool RemoveTorrent(string infoHash)
         {
-            //lock (_torrentsLock)
+            lock (_torrentsLock)
             {
                 if (!TryGetTorrent(infoHash, out Torrent torrent)) return false;
                 var result = _torrents.Remove(infoHash);
@@ -114,7 +114,7 @@ namespace Bubak.Client
 
         protected bool SetTorrent(Torrent torrent)
         {
-            //lock (_torrentsLock)
+            lock (_torrentsLock)
             {
                 if (!_torrents.ContainsKey(torrent.InfoHash)) return false;
                 _torrents[torrent.InfoHash] = ((torrent, _torrents[torrent.InfoHash].handle));
